@@ -1,0 +1,49 @@
+<!-- public/signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-400 to-blue-500 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center mb-6">Create an Account</h2>
+    <form id="signupForm" class="space-y-4">
+      <input type="text" name="username" placeholder="Username" required class="w-full p-3 border rounded">
+      <input type="password" name="password" placeholder="Password" required class="w-full p-3 border rounded">
+      <input type="password" name="confirmPassword" placeholder="Confirm Password" required class="w-full p-3 border rounded">
+      <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">Sign Up</button>
+    </form>
+    <p class="mt-4 text-center text-sm">Already have an account? <a href="/login" class="text-blue-600">Login</a></p>
+    <div id="message" class="mt-4 text-center text-sm font-semibold"></div>
+  </div>
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const username = form.username.value;
+      const password = form.password.value;
+      const confirmPassword = form.confirmPassword.value;
+      const message = document.getElementById('message');
+
+      if (password !== confirmPassword) {
+        message.textContent = 'Passwords do not match';
+        message.className = 'text-red-500';
+        return;
+      }
+
+      const res = await fetch('/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      message.textContent = data.message;
+      message.className = res.ok ? 'text-green-500' : 'text-red-500';
+      if (res.ok) setTimeout(() => window.location.href = '/login', 1000);
+    });
+  </script>
+</body>
+</html>
