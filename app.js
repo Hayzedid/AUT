@@ -4,6 +4,26 @@ const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const app = express();
+
+
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.url}`);
+  next();
+});
+
+
+console.log('=== DEBUGGING ===');
+console.log('About to register /i route');
+
+app.get('/i', (req, res) => {
+  console.log('Route /i was hit!');
+  res.send('Hello from /i route!');
+});
+
+console.log('Route /i registered');
+console.log('=== END DEBUGGING ===');
+
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -16,12 +36,6 @@ app.use(session({
   }
 }));
 
-
-
-// app.get('/i', (req, res) => {
-//   console.log('Route /i hit');
-//   res.send('hello there');
-// });
 
 app.use(express.static(path.join(__dirname, 'public')));
 const db = mysql.createConnection({
@@ -37,9 +51,6 @@ db.connect(err => {
 });
 
 app.get('/', (req, res) => res.redirect('/signup'));
-
-
-
 app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'public/signup.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public/login.html')));
 app.get('/dashboard', (req, res) => {
@@ -80,37 +91,22 @@ app.post('/login', (req, res) => {
 });
 
 
-// Place this before app.listen()
-// app.post('/logout', (req, res) => {
-//   console.log('Logout route hit');
-//   console.log('Session:', req.session);
-  
-//   if (!req.session || !req.session.userId) {
-//     return res.status(401).json({ message: 'Not logged in' });
-//   }
 
-//   req.session.destroy((err) => {
-//     if (err) {
-//       console.error('Logout error:', err);
-//       return res.status(500).json({ message: 'Could not log out' });
-//     }
-//     res.clearCookie('connect.sid');
-//     return res.status(200).json({ message: 'Logged out successfully' });
-//   });
-// });
-// app.get('/logout', (req, res) => {
-//   req.session.destroy(err => {
-//     if (err) return res.redirect('/dashboard');
-//     res.clearCookie('connect.sid');
-//     res.redirect('/login');
-//   });
-// });
+app.post('/logout', (req, res) => {
+  if (!req.session || !req.session.userId) {
+    return res.status(401).redirect('/login');
+  }
 
 
+    req.session.destroy((err) => {
+    if (err) return res.status(500).json({ message: 'Could not log out' });
 
 
+    res.clearCookie('connect.sid');
 
-
-
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.json({ message: 'Logged out successfully' }); // Returns JSON, doesn't redirect
+  });
+});
 
 app.listen(5000, () => console.log('Server running on http://localhost:5000'));

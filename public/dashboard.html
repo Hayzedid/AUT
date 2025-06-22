@@ -11,46 +11,21 @@
     <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome to your Dashboard</h1>
     <p class="text-gray-600">You're logged in successfully.</p>
   </div>
- <a href="./logout.html" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</a>
 
-  
-  <!-- <div>
-      <button type="button" id="logout-btn" class="text-center rounded-lg w-24  bg-blue-700 justify-center  ">Log Out</button>
-  </div> -->
-  <!-- <script>
-document.getElementById('logout-btn').addEventListener('click', async () => {
+<button type="button" onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+<script>
+  // Function to handle logout
+
+async function logout() {
   try {
-    console.log('Attempting to logout...');
-    const res = await fetch('/logout', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    // Check if response is JSON
-    const contentType = res.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
-      const data = await res.json();
-      if (res.ok) {
-        window.location.href = '/login';
-      } else {
-        alert(data.message || 'Logout failed');
-      }
-    } else {
-      console.error('Received non-JSON response');
-      if (res.status === 404) {
-        alert('Logout endpoint not found. Please check server configuration.');
-      } else {
-        alert('Unexpected response from server');
-      }
+    const response = await fetch('/logout', { method: 'POST' });
+    if (response.ok) {
+      window.location.href = '/login'; // YOU NEED THIS LINE for redirect
     }
   } catch (error) {
     console.error('Logout error:', error);
-    alert('Network error. Please try again.');
   }
-});
-</script> -->
+}
+</script> 
 </body>
 </html>
